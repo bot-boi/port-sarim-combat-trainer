@@ -1,0 +1,50 @@
+function FarmGoblinBehavior(): Boolean;
+
+  function TryClickATPA(atpa: T2DPointArray; uptext: TStringArray; timeout: Integer = ONE_SECOND*2): Boolean;
+  var
+    tpa:  TPointArray;
+    rp:   TPoint; // random point
+    T: TCountdown;
+
+  begin
+    Result := False;
+    for tpa in atpa do begin
+      rp := tpa[Random(Length(tpa))];
+      HumanMMouse(rp.X, rp.Y, RandomRange(10, 20));
+      if Mainscreen.IsUpText(uptext) then begin
+        Result := Mouse.Click(ctRed);
+        if Result then Break;
+      end;
+
+      if T.IsFinished() then begin
+        Result := False;
+        Break;
+      end;
+    end;
+  end;
+
+  function ClickGoblin(): Boolean;
+  var
+    atpa: T2DPointArray;
+
+  begin
+    atpa := GetColorsInDots([MMDotNPC], C.Goblin, 3, [100, 500]);
+    Result := TryClickATPA(atpa, ['Goblin'], RandomRange(ONE_SECOND, ONE_SECOND*3));
+  end;
+
+  function InCombat(): Boolean;
+  begin
+    Result := Length(Mainscreen.FindHPBars(Mainscreen.GetPlayerBox)) > 0;
+  end;
+
+begin
+  if Script.Walker.GetMyPos().DistanceTo(P.Goblins) > 50 then begin
+    TravelTo(P.Goblins);
+  end;
+
+  // if low health eat cabbages
+  // if low health and no cabbages do NextState
+  // if timeout do NextState
+
+  if not InCombat() then ClickGoblin();
+end;

@@ -1,0 +1,47 @@
+
+
+type
+  TState    = (BankRun, FarmCabbage, FarmGoblin, FarmGull1, FarmGull2, Startup, Travel);
+
+{$include_once behaviors/behavior.simba}
+
+var
+  State: TState = Startup;
+
+
+// figures out what the next bot state should be
+function NextState(): TState;
+var
+  combatLvl: Integer;
+  pResults: Array of TState;    // possible results
+
+begin
+  combatLvl := Combat.GetCombatLevel();
+
+  if (Inventory.Count('Cabbage') = 0) and Inventory.IsFull() then begin
+    Exit(BankRun); // if no food and full inv, then need bank
+  end else if Inventory.Count('Cabbage') < 4 then begin
+    Exit(FarmCabbage);
+  end;
+
+  if combatLvl >= 12 then pResults += FarmGoblin;
+
+  pResults += FarmGull1;
+  pResults += FarmGull2;
+
+  Result := pResults[Random(Length(pResults))];
+end;
+
+// map state to bot behavior (could also be called a task)
+function GetStateBehavior(state: TState): function: Boolean;
+begin
+  Result := @Behaviors[state];
+end;
+
+// run a behavior based on the current state
+procedure RunStateBehavior();
+begin
+  repeat
+    Script.DoAntiban();
+  until not GetStateBehavior(State)();
+end;

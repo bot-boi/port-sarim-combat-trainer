@@ -1,0 +1,14 @@
+type
+  TBehavior = Function(): Boolean;
+
+{$include_once behaviors/goblin.simba}
+
+var
+  Behaviors: Array[0..100] of TBehavior;
+
+begin
+  Behaviors[FarmGoblin] := @FarmGoblinBehavior;
+  // Behaviors[FarmGull1]  := @FarmGullBehavior;
+end;
+
+

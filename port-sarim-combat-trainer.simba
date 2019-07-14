@@ -1,0 +1,31 @@
+program portSarimCombatTrainer;
+
+{$DEFINE DEBUG}
+
+{$include_once Script/script.simba}
+{$include_once Script/extra.simba}
+{$include_once RSItemFinder/itemfinder.simba}
+
+{$include_once positions.simba}
+{$include_once colors.simba}
+{$include_once state.simba}
+
+
+
+procedure OnStart();
+begin
+  Script.Init('/usr/games/runescape --prmfile=oldschool.prm & echo -ne "\n"');
+  {$include_once player-declarations.simba}
+  Script.LoadMap('world.png');
+  Players.SetCurrent(0);
+  Script.Login();
+end;
+
+
+
+begin
+  OnStart();
+  repeat
+    FarmGoblinBehavior();
+  until IsKeyDown(VK_ESCAPE);
+end.

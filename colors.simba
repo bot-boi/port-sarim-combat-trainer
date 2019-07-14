@@ -1,0 +1,13 @@
+type
+  TColors = record
+    Cabbage, Goblin, Gull: TCTS2Color;
+  end;
+
+var
+  C: TColors;
+
+begin
+  C.Cabbage := CTS2( 4176526, 22, 0.04, 0.61);
+  C.Goblin  := CTS2( 5924989, 19, 0.38, 0.70); // greyish color
+  C.Gull    := CTS2(10592684, 27, 0.64, 0.11);
+end;
