@@ -8,9 +8,32 @@ program portSarimCombatTrainer;
 
 {$include_once positions.simba}
 {$include_once colors.simba}
+
+
+function TryClickATPA(atpa: T2DPointArray; uptext: TStringArray; timeout: Integer = ONE_SECOND*2): Boolean;
+var
+  tpa:  TPointArray;
+  rp:   TPoint; // random point
+  T: TCountdown;
+
+begin
+  Result := False;
+  for tpa in atpa do begin
+    rp := tpa[Random(Length(tpa))];
+    HumanMMouse(rp.X, rp.Y, RandomRange(10, 20));
+    if Mainscreen.IsUpText(uptext) then begin
+      Result := Mouse.Click(ctRed);
+      if Result then Break;
+    end;
+
+    if T.IsFinished() then begin
+      Result := False;
+      Break;
+    end;
+  end;
+end;
+
 {$include_once state.simba}
-
-
 
 procedure OnStart();
 begin
@@ -26,6 +49,6 @@ end;
 begin
   OnStart();
   repeat
-    FarmGoblinBehavior();
+    FarmGullBehavior();
   until IsKeyDown(VK_ESCAPE);
 end.
