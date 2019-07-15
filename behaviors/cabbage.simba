@@ -1,0 +1,24 @@
+function FarmCabbageBehavior(): Boolean;
+
+  function ClickCabbage: Boolean;
+  var
+    atpa: T2DPointArray;
+
+  begin
+    atpa := GetColorsInDots([MMDotNPC], C.Cabbage, 3, [50, 200]);
+    Result := TryClickATPA(atpa, ['Cabbage'], RandomRange(ONE_SECOND, ONE_SECOND*3));
+  end;
+
+var
+  maxDistance: Integer = 50;
+begin
+  if Script.Walker.GetMyPos().DistanceTo(P.CabbagePatch) > maxDistance then begin
+    TravelTo(P.CabbagePatch);
+  end;
+
+  // if low health eat cabbages
+  // if low health and no cabbages do NextState
+  // if timeout do NextState
+
+  if not InCombat() then ClickCabbage();
+end;

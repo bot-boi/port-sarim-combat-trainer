@@ -1,0 +1,33 @@
+function FarmGullBehavior(): Boolean;
+
+  function ClickGull(): Boolean;
+  var
+    atpa: T2DPointArray;
+  begin
+    atpa := GetColorsInDots([MMDotNPC], C.Gull, 2, [25, 150]);
+    Result := TryClickATPA(atpa, ['Seagull'], RandomRange(ONE_SECOND, ONE_SECOND*3));
+  end;
+
+  procedure Reposition();
+  var
+    myPos: TPoint;
+    nearestGullSite: TPoint;
+    maxDistance: Integer = 50;
+  begin
+    myPos := Script.Walker.GetMyPos();
+    if myPos.DistanceTo(P.Gulls1) < myPos.DistanceTo(P.Gulls2) then begin
+      if myPos.DistanceTo(P.Gulls1) > maxDistance then TravelTo(P.Gulls1);
+    end else begin
+      if myPos.DistanceTo(P.Gulls2) > maxDistance then TravelTo(P.Gulls2);
+    end;
+  end;
+
+begin
+  Reposition();
+
+  // if low health eat cabbages
+  // if low health and no cabbages do NextState
+  // if timeout do NextState
+
+  if not InCombat() then ClickGull();
+end;
