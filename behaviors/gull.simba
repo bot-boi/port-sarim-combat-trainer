@@ -6,13 +6,14 @@ function FarmGullBehavior(): Boolean;
   begin
     atpa := GetColorsInDots([MMDotNPC], C.Gull, 2, [25, 150]);
     Result := TryClickATPA(atpa, ['Seagull'], RandomRange(ONE_SECOND, ONE_SECOND*3));
+    while Minimap.IsPlayerMoving(100) do Wait(Random(50));
   end;
 
   procedure Reposition();
   var
     myPos: TPoint;
     nearestGullSite: TPoint;
-    maxDistance: Integer = 50;
+    maxDistance: Integer = 25;
   begin
     myPos := Script.Walker.GetMyPos();
     if myPos.DistanceTo(P.Gulls1) < myPos.DistanceTo(P.Gulls2) then begin
@@ -25,9 +26,6 @@ function FarmGullBehavior(): Boolean;
 begin
   Reposition();
 
-  // if low health eat cabbages
-  // if low health and no cabbages do NextState
-  // if timeout do NextState
-
   if not InCombat() then ClickGull();
+  Exit(True);
 end;

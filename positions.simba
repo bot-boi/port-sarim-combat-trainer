@@ -15,7 +15,7 @@ var
 begin
   P := [Point(4065,3283), Point(4181,3476), Point(3917,3576), Point(3798,3624), Point(3918,3507), Point(3921, 3635)];
 
-  P.CabbagePatch := Point(4065, 3283);
+  P.CabbagePatch := Point(4031, 3292);
   P.DraynorBank  := Point(4181, 3476);
   P.Docks        := Point(3917, 3576);
   P.Goblins      := Point(3798, 3624);
@@ -37,6 +37,7 @@ begin
     Script.Walker.WebWalk(p);
     myPos := Script.Walker.GetMyPos();
   until (myPos.DistanceTo(p) <= 16) or t.IsFinished();
+  while Minimap.IsPlayerMoving(100) do Wait(Random(50));
 end;
 
 begin

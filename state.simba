@@ -1,13 +1,17 @@
 
 
-type
-  TState    = (BankRun, FarmCabbage, FarmGoblin, FarmGull1, FarmGull2, Startup, Travel);
+type                     // flag for certain behaviors that get state-stuck forever
+  TState    = (BankRun, BehaviorDone, EatFood, FarmCabbage, FarmGoblin, FarmGull1, FarmGull2, Startup, Travel);
 
 {$include_once behaviors/behavior.simba}
 
 var
-  State: TState = Startup;
+  State: TState = EatFood;
+  StateCountdown: TCountdown;
 
+begin
+  StateCountdown.Init(RandomRange(ONE_MINUTE*5, ONE_HOUR div 2));
+end;
 
 // figures out what the next bot state should be
 function NextState(): TState;
@@ -16,23 +20,33 @@ var
   pResults: Array of TState;    // possible results
 
 begin
-  combatLvl := Combat.GetCombatLevel();
+  // combatLvl := Combat.GetCombatLevel();
 
-  if (Inventory.Count('Cabbage') = 0) and Inventory.IsFull() then begin
+  if Minimap.GetHPPercent() <= 50 then begin
+    writeln('eating food');
+    Exit(EatFood);  // eat cabbages until full health
+  end else if (Inventory.Count('Cabbage') = 0) and Inventory.IsFull() then begin
+    writeln('runnin to bank');
     Exit(BankRun); // if no food and full inv, then need bank
-  end else if Inventory.Count('Cabbage') < 4 then begin
+  end else if (Inventory.Count('Cabbage') = 0) then begin
+    writeln('farming cabbages');
     Exit(FarmCabbage);
   end;
 
-  if combatLvl >= 12 then pResults += FarmGoblin;
+  if ((Random(100) = 0) and StateCountdown.IsFinished()) or (State = BehaviorDone) then begin
+    writeln('state change!');
+    pResults += FarmGoblin;
+    pResults += FarmGull1;
+    pResults += FarmGull2;
+    Result := pResults[Random(Length(pResults))];
+    StateCountdown.Init(RandomRange(ONE_MINUTE*5, ONE_HOUR div 2));
+  end else begin
+    Result := State;
+  end;
 
-  pResults += FarmGull1;
-  pResults += FarmGull2;
-
-  Result := pResults[Random(Length(pResults))];
 end;
 
-// map state to bot behavior (could also be called a task)
+// map state to bot behavior (could also be called a task ig)
 function GetStateBehavior(state: TState): function: Boolean;
 begin
   Result := @Behaviors[state];
@@ -41,7 +55,7 @@ end;
 // run a behavior based on the current state
 procedure RunStateBehavior();
 begin
-  repeat
+  while GetStateBehavior(State)() do begin
     Script.DoAntiban();
-  until not GetStateBehavior(State)();
+  end;
 end;

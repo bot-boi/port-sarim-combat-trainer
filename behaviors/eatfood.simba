@@ -1,0 +1,28 @@
+function EatFoodBehavior(): Boolean;
+
+  function EatCabbages(): Boolean;
+  var
+    cabbageSlots: TIntegerArray;
+    targetSlot:   Integer;
+    targetBox:    TBox;
+    targetPoint:  TPoint;
+  begin
+    Result := False;
+    cabbageSlots := Inventory.FindAll('Cabbage');
+
+    for targetSlot in cabbageSlots do begin
+      targetBox := Inventory.GetSlotBox(targetSlot);
+      targetPoint := SRL.RandomPoint(targetBox);
+      HumanMMouse(targetPoint.X, targetPoint.Y, RandomRange(10, 30));
+      Mouse.Click(ctRed);
+
+      if Minimap.GetHPPercent() >= 90 then begin
+        Exit(False);
+      end;
+      Wait(RandomRange(900, 2300));
+    end;
+  end;
+
+begin
+  Result := EatCabbages();
+end;

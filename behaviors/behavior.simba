@@ -1,17 +1,26 @@
+// a behavior is the way the bot will act when a certain state is assigned
+// behaviors return true when they can continue running, and false when they are done
+// if a behavior returns false, the state will be changed to DoneBehavior, the state-change
+// cooldown timer will be ignored, and a new state will immediately be chosen
+// F:S -> B is onto
+
 type
   TBehavior = Function(): Boolean;
 
+{$include_once behaviors/eatfood.simba}
 {$include_once behaviors/cabbage.simba}
 {$include_once behaviors/goblin.simba}
 {$include_once behaviors/gull.simba}
 
 var
-  Behaviors: Array[0..10] of TBehavior;
+  Behaviors: Array[0..20] of TBehavior;
 
 begin
+  Behaviors[EatFood]     := @EatFoodBehavior;
+  Behaviors[FarmCabbage] := @FarmCabbageBehavior;
   Behaviors[FarmGoblin]  := @FarmGoblinBehavior;
   Behaviors[FarmGull1]   := @FarmGullBehavior;
-  Behaviors[FarmCabbage] := @FarmCabbageBehavior;
+  Behaviors[FarmGull2]   := @FarmGullBehavior;
 end;
 
 

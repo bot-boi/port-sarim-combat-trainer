@@ -39,16 +39,20 @@ procedure OnStart();
 begin
   Script.Init('/usr/games/runescape --prmfile=oldschool.prm & echo -ne "\n"');
   {$include_once player-declarations.simba}
-  Script.LoadMap('world.png');
+  Script.LoadMap('world.png', 5);
   Players.SetCurrent(0);
   Script.Login();
 end;
 
-
-
+var
+  ScriptTimer: TCountdown;
 begin
   OnStart();
+  ScriptTimer.Init(ONE_MINUTE*47);
   repeat
-    FarmGullBehavior();
-  until IsKeyDown(VK_ESCAPE);
+    State := NextState();
+    if GetStateBehavior(State)() = False then State := BehaviorDone;
+    // RunStateBehavior();
+    if Random(50) = 0 then Minimap.RandomCompass(0, 359);
+  until ScriptTimer.IsFinished() or IsKeyDown(VK_ESCAPE);
 end.

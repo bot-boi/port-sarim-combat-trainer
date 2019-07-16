@@ -3,22 +3,36 @@ function FarmCabbageBehavior(): Boolean;
   function ClickCabbage: Boolean;
   var
     atpa: T2DPointArray;
+    tpa: TPointArray;
 
   begin
-    atpa := GetColorsInDots([MMDotNPC], C.Cabbage, 3, [50, 200]);
+    SRL.FindColors(tpa, C.Cabbage, Mainscreen.GetBounds());
+    atpa := tpa.Cluster(4);
+    atpa.FilterSize(25, 500);
+    atpa.SortByIndex(Mainscreen.GetMiddle());
+
+    {$IFDEF DEBUG}
+      Bitmap.FromClient();
+      Bitmap.DrawATPA(ATPA);
+      Bitmap.UpdateDebugImage();
+    {$ENDIF}
+
     Result := TryClickATPA(atpa, ['Cabbage'], RandomRange(ONE_SECOND, ONE_SECOND*3));
+    while Minimap.IsPlayerMoving(100) do Wait(Random(50));
+    Wait(RandomRange(500, 1500));
   end;
 
 var
-  maxDistance: Integer = 50;
+  maxDistance: Integer = 100;
 begin
   if Script.Walker.GetMyPos().DistanceTo(P.CabbagePatch) > maxDistance then begin
     TravelTo(P.CabbagePatch);
   end;
 
-  // if low health eat cabbages
-  // if low health and no cabbages do NextState
-  // if timeout do NextState
-
-  if not InCombat() then ClickCabbage();
+  ClickCabbage();
+  writeln(Inventory.Count('Cabbage'));
+  if (Inventory.Count('Cabbage') >= 15) or Inventory.IsFull() then begin
+    Exit(False);
+  end;
+  Exit(True);
 end;
