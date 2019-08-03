@@ -1,7 +1,7 @@
 
 
 type                     // flag for certain behaviors that get state-stuck forever
-  TState    = (BankRun, BehaviorDone, EatFood, FarmCabbage, FarmGoblin, FarmGull1, FarmGull2, Startup, Travel);
+  TState    = (BankRun, BehaviorDone, EatFood, FarmCabbage, FarmGoblin, FarmGull1, FarmGull2, Startup, Travel, Woodcutting);
 
 {$include_once behaviors/behavior.simba}
 
@@ -34,10 +34,16 @@ begin
   end;
 
   if ((Random(100) = 0) and StateCountdown.IsFinished()) or (State = BehaviorDone) then begin
-    writeln('state change!');
-    pResults += FarmGoblin;
-    pResults += FarmGull1;
-    pResults += FarmGull2;
+
+    //if combatLvl > 8 then begin  // should add a bias based on combat lvl instead of just a hard limit
+      pResults += FarmGull2;
+    //end else begin
+      pResults += FarmGoblin;
+      pResults += FarmGoblin;
+      pResults += FarmGull1;
+      pResults += Woodcutting;
+    //end;
+
     Result := pResults[Random(Length(pResults))];
     StateCountdown.Init(RandomRange(ONE_MINUTE*5, ONE_HOUR div 2));
   end else begin

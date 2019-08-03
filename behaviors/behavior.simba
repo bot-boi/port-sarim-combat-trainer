@@ -11,6 +11,7 @@ type
 {$include_once behaviors/cabbage.simba}
 {$include_once behaviors/goblin.simba}
 {$include_once behaviors/gull.simba}
+{$include_once behaviors/woodcutting.simba}
 
 var
   Behaviors: Array[0..20] of TBehavior;
@@ -21,6 +22,7 @@ begin
   Behaviors[FarmGoblin]  := @FarmGoblinBehavior;
   Behaviors[FarmGull1]   := @FarmGullBehavior;
   Behaviors[FarmGull2]   := @FarmGullBehavior;
+  Behaviors[Woodcutting] := @WoodcuttingBehavior;
 end;
 
 

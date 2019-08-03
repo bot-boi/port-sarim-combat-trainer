@@ -4,7 +4,7 @@ function FarmGullBehavior(): Boolean;
   var
     atpa: T2DPointArray;
   begin
-    atpa := GetColorsInDots([MMDotNPC], C.Gull, 2, [25, 150]);
+    atpa := GetColorsInDots([MMDotNPC], C.Gull, 2, [25, 150], 100);
     Result := TryClickATPA(atpa, ['Seagull'], RandomRange(ONE_SECOND, ONE_SECOND*3));
     while Minimap.IsPlayerMoving(100) do Wait(Random(50));
   end;
@@ -25,7 +25,7 @@ function FarmGullBehavior(): Boolean;
 
 begin
   Reposition();
-
   if not InCombat() then ClickGull();
+  if Random(50) = 0 then NextCombatStyle();
   Exit(True);
 end;

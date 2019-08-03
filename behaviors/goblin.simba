@@ -16,5 +16,6 @@ begin
     TravelTo(P.Goblins);
   end;
   if not InCombat() then ClickGoblin();
+  if Random(50) = 0 then NextCombatStyle();
   Exit(True);
 end;

@@ -1,13 +1,15 @@
 type
   TColors = record
-    Cabbage, Goblin, Gull: TCTS2Color;
+    Cabbage, Goblin, Gull, Tree, TreeMinimap: TCTS2Color;
   end;
 
 var
   C: TColors;
 
 begin
-  C.Cabbage := CTS2( 4176526, 22, 0.04, 0.61);
-  C.Goblin  := CTS2( 6321019, 19, 0.57, 0.48); // greyish color
-  C.Gull    := CTS2(10592684, 27, 0.64, 0.11);
+  C.Cabbage     := CTS2( 4176526, 22, 0.04, 0.61);
+  C.Goblin      := CTS2( 6321019, 19, 0.57, 0.48); // greyish color
+  C.Gull        := CTS2(10592684, 27, 0.64, 0.11);
+  C.Tree        := CTS2( 2247748, 19, 0.12, 0.98); // tree top color
+  C.TreeMinimap := CTS2(  343047,  5, 0.48, 2.64); // tree color for minimap (green)
 end;

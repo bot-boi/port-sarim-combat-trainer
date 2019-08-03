@@ -9,6 +9,28 @@ program portSarimCombatTrainer;
 {$include_once positions.simba}
 {$include_once colors.simba}
 
+var
+  CombatStyleIndex: Integer = 0;
+
+begin
+  CombatStyleIndex := Random(2);
+end;
+
+procedure NextCombatStyle();     // move this and other junk to somewhere else
+var
+  maxIndex: Integer = 2;
+begin
+  Inc(CombatStyleIndex);
+  if CombatStyleIndex > maxIndex then CombatStyleIndex := 0;
+
+  Combat.Open();
+
+  case CombatStyleIndex of
+    0: Combat.ToggleButton(cbtAccurate,   True);
+    1: Combat.ToggleButton(cbtControlled, True); // slash
+    2: Combat.ToggleButton(cbtDefensive,  True);
+  end;
+end;
 
 function TryClickATPA(atpa: T2DPointArray; uptext: TStringArray; timeout: Integer = ONE_SECOND*2): Boolean;
 var
@@ -44,15 +66,20 @@ begin
   Script.Login();
 end;
 
+
 var
   ScriptTimer: TCountdown;
 begin
   OnStart();
   ScriptTimer.Init(ONE_MINUTE*47);
+  State := EatFood;
   repeat
+    // repeat Wait(50) until IsKeyDown(VK_ENTER);
+    // WoodcuttingBehavior();
     State := NextState();
     if GetStateBehavior(State)() = False then State := BehaviorDone;
-    // RunStateBehavior();
+
     if Random(50) = 0 then Minimap.RandomCompass(0, 359);
+    SRL.DismissRandom();
   until ScriptTimer.IsFinished() or IsKeyDown(VK_ESCAPE);
 end.

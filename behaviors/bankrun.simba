@@ -1,0 +1,5 @@
+function BankRunBehavior(): Boolean;
+begin
+  TravelTo(P.DraynorBank);
+  // deposit items that arent axe
+end;
