@@ -1,20 +1,29 @@
 function FarmGoblinBehavior(): Boolean;
+  procedure Reposition;
+  var
+    maxDistance: Integer = 25;
+  begin
+    if Script.Walker.GetMyPos().DistanceTo(P.Goblins) > maxDistance then begin
+      TravelTo(RandomizePoint(P.Goblins, 6));
+    end;
+  end;
 
   function ClickGoblin(): Boolean;
   var
     atpa: T2DPointArray;
   begin
-    atpa := GetColorsInDots([MMDotNPC], C.Goblin, 4, [50, 500]);
-    Result := TryClickATPA(atpa, ['Goblin'], RandomRange(ONE_SECOND, ONE_SECOND*3));
-    while Minimap.IsPlayerMoving(100) do Wait(Random(50));
+    {atpa := GetColorsInDots([MMDotNPC], C.Goblin, 4, [50, 500]);
+    Result := TryClickATPA(atpa, ['Goblin'], RandomRange(ONE_SECOND, ONE_SECOND*3));}
+    HoverRandomDot([MMDotNPC], Point(1, 1));
+    if Mainscreen.IsUpText('Goblin') or Mainscreen.IsUpText('Giant rat') then begin // include rats cus they're nearby
+      Result := Mouse.Click(ctRed); // result unused
+    end;
+
+    // repeat Wait(50); until InCombat();
   end;
 
-var
-  maxDistance: Integer = 50;
 begin
-  if Script.Walker.GetMyPos().DistanceTo(P.Goblins) > maxDistance then begin
-    TravelTo(P.Goblins);
-  end;
+  Reposition();
   if not InCombat() then ClickGoblin();
   if Random(50) = 0 then NextCombatStyle();
   Exit(True);

@@ -4,22 +4,22 @@ function FarmGullBehavior(): Boolean;
   var
     atpa: T2DPointArray;
   begin
-    atpa := GetColorsInDots([MMDotNPC], C.Gull, 2, [25, 150], 100);
+    atpa := GetColorsInDots([MMDotNPC], C.Gull, 2, [25, 150]);
     Result := TryClickATPA(atpa, ['Seagull'], RandomRange(ONE_SECOND, ONE_SECOND*3));
-    while Minimap.IsPlayerMoving(100) do Wait(Random(50));
+    repeat Wait(50); until InCombat();
   end;
 
   procedure Reposition();
   var
     myPos: TPoint;
     nearestGullSite: TPoint;
-    maxDistance: Integer = 25;
+    maxDistance: Integer = 20;
   begin
     myPos := Script.Walker.GetMyPos();
     if myPos.DistanceTo(P.Gulls1) < myPos.DistanceTo(P.Gulls2) then begin
-      if myPos.DistanceTo(P.Gulls1) > maxDistance then TravelTo(P.Gulls1);
+      if myPos.DistanceTo(P.Gulls1) > maxDistance then TravelTo(RandomizePoint(P.Gulls1, 4));
     end else begin
-      if myPos.DistanceTo(P.Gulls2) > maxDistance then TravelTo(P.Gulls2);
+      if myPos.DistanceTo(P.Gulls2) > maxDistance then TravelTo(RandomizePoint(P.Gulls2, 4));
     end;
   end;
 

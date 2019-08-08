@@ -1,0 +1,69 @@
+// mining behavior, draynor mine
+const
+  BronzePositionsRaw: T2DIntArray = [[3718, 3468], [3718, 3460], [3714, 3460], [3722, 3456], [3726, 3456]];
+
+var
+  BronzePositions: TPointArray;
+
+procedure InitBronzePositions();
+var
+  rawPoin: TIntegerArray;
+begin
+  for rawPoin in BronzePositionsRaw do begin
+    BronzePositions.Append(Point(rawPoin[0], rawPoin[1]));
+  end;
+end;
+
+begin
+  InitBronzePositions();
+end;
+
+function MiningBehavior(): Boolean;
+
+  procedure DropItems();
+  var
+    item: String;
+    itemsToDrop: TStringArray = ['Copper ore'];
+    occupiedSlots: TIntArray = [];  // slots occupied by items in itemsToDrop
+  begin
+    for item in itemsToDrop do begin
+      occupiedSlots := Inventory.FindAll(item);
+      Inventory.DropItems(occupiedSlots);
+    end;
+  end;
+
+  function ClickBronzeOre(): Boolean;
+
+    procedure Reposition(); // move to bronze ore deposits if needed
+    var
+      maxDistance: Integer = 16;
+    begin
+      if Script.Walker.GetMyPos().DistanceTo(P.RimmMineBronze) > maxDistance then begin
+        TravelTo(RandomizePoint(P.RimmMineBronze, 4));
+      end;
+    end;
+
+  var
+    atpa:        T2DPointArray;
+    poin, targetBronzePoin: TPoint;
+    maxDist: Integer = 5;
+  begin
+    Reposition();
+
+    targetBronzePoin := BronzePositions[Random(Length(BronzePositions))];
+    atpa := GetColorsInTiles([targetBronzePoin], C.BronzeOre, 4, [200, 2000]);
+    Result := TryClickATPA(atpa, ['Rocks'], RandomRange(ONE_SECOND*1, ONE_SECOND*3));
+
+    if Result then begin
+      while Minimap.IsPlayerMoving(100) do Wait(Random(50));
+      repeat Wait(50); until (Length(GetColorsInTiles([targetBronzePoin], C.EmptyOre, 4, [200, 2000])) > 0);
+      // while not XPBar.Find() do Wait(50); // if xpbar isnt up, wait until it is, this should probably have a timeout
+      // Wait(RandomRange(1500, 3000));      // wait for xpbar to disappear
+    end;
+  end;
+
+begin
+  if Inventory.IsFull() then DropItems();
+  ClickBronzeOre();
+  Exit(True);
+end;

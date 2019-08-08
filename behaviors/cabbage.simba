@@ -23,15 +23,16 @@ function FarmCabbageBehavior(): Boolean;
   end;
 
 var
-  maxDistance: Integer = 100;
+  MaxDistanceCabbage: Integer = 100;
+  MaxCabbage:  Integer = 9;
 begin
-  if Script.Walker.GetMyPos().DistanceTo(P.CabbagePatch) > maxDistance then begin
-    TravelTo(P.CabbagePatch);
+  if Script.Walker.GetMyPos().DistanceTo(P.CabbagePatch) > MaxDistanceCabbage then begin
+    TravelTo(RandomizePoint(P.CabbagePatch, 8));
   end;
 
   ClickCabbage();
-  writeln(Inventory.Count('Cabbage'));
-  if (Inventory.Count('Cabbage') >= 15) or Inventory.IsFull() then begin
+
+  if (Inventory.Count('Cabbage') >= maxCabbage) or Inventory.IsFull() then begin
     Exit(False);
   end;
   Exit(True);

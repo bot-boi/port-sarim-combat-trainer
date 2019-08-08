@@ -2,7 +2,7 @@ const      // path is just a bunch of points between all locations with some ove
   path: T2DIntArray = [[3917, 3623], [3917, 3580], [3867, 3582], [3810, 3556], [3787, 3612], [3817, 3622], [3837, 3650], [3881, 3644], [3915, 3622], [3917, 3579], [3919, 3532], [3922, 3503], [3969, 3503], [3977, 3470], [3943, 3437], [3906, 3424], [3889, 3455], [3922, 3502], [3967, 3503], [3976, 3470], [4024, 3452], [4065, 3411], [4018, 3381], [4056, 3351], [4064, 3388], [4097, 3341], [4124, 3384], [4123, 3445], [4090, 3423], [4095, 3374], [4069, 3338], [4027, 3336], [4020, 3298], [3994, 3294], [3994, 3266], [4032, 3264], [4056, 3283], [4010, 3324], [3991, 3358], [3963, 3398], [3951, 3453], [3918, 3484], [3873, 3477], [3827, 3493], [3803, 3532], [3822, 3589]];
 
 type TPositions = record
-    CabbagePatch, DraynorBank, Docks, Goblins, Gulls1, Gulls2: TPoint;
+    CabbagePatch, DraynorBank, Docks, Goblins, Gulls1, Gulls2, RimmMine, RimmMineBronze: TPoint;
   end;
 
 var
@@ -15,12 +15,14 @@ var
 begin
   P := [Point(4065,3283), Point(4181,3476), Point(3917,3576), Point(3798,3624), Point(3918,3507), Point(3921, 3635)];
 
-  P.CabbagePatch := Point(4031, 3292);
-  P.DraynorBank  := Point(4181, 3476);
-  P.Docks        := Point(3917, 3576);
-  P.Goblins      := Point(3798, 3624);
-  P.Gulls1       := Point(3918, 3507);
-  P.Gulls2       := Point(3921, 3635);
+  P.CabbagePatch   := Point(4031, 3292);
+  P.DraynorBank    := Point(4181, 3476);
+  P.Docks          := Point(3917, 3576);
+  P.Goblins        := Point(3798, 3624);
+  P.Gulls1         := Point(3918, 3507);
+  P.Gulls2         := Point(3921, 3635);
+  P.RimmMine       := Point(3719, 3482);
+  P.RimmMineBronze := Point(3722, 3464);
 
   RSW_Graph.AppendRaw(path);
 end;

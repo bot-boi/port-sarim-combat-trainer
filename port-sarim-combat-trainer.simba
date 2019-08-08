@@ -10,6 +10,7 @@ program portSarimCombatTrainer;
 {$include_once colors.simba}
 
 var
+  ScriptTimer: TCountdown;
   CombatStyleIndex: Integer = 0;
 
 begin
@@ -61,21 +62,19 @@ procedure OnStart();
 begin
   Script.Init('/usr/games/runescape --prmfile=oldschool.prm & echo -ne "\n"');
   {$include_once player-declarations.simba}
-  Script.LoadMap('world.png', 5);
+  Script.LoadMap('world.png');
   Players.SetCurrent(0);
   Script.Login();
 end;
 
 
-var
-  ScriptTimer: TCountdown;
 begin
   OnStart();
-  ScriptTimer.Init(ONE_MINUTE*47);
+  ScriptTimer.Init(RandomRange(ONE_MINUTE*45, ONE_HOUR+(ONE_HOUR div 4)));
   State := EatFood;
   repeat
     // repeat Wait(50) until IsKeyDown(VK_ENTER);
-    // WoodcuttingBehavior();
+
     State := NextState();
     if GetStateBehavior(State)() = False then State := BehaviorDone;
 
