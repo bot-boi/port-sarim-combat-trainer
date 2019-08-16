@@ -1,0 +1,46 @@
+function BankRun(): Boolean;
+  function getDepositSlots(): TIntArray;
+  var                                               // only keep 1 of each
+    toolFilter: TStringArray = ['Bronze axe', 'Tinderbox', 'Bronze pickaxe', 'Bronze sword', 'Steel longsword', 'Small fishing net'];
+    itemFilter: TStringArray = ['Cabbage'];
+    slots, depositSlots: TIntArray;
+    slot: Integer;
+    str:        String;
+  begin
+    Result := [];
+
+    depositSlots := [];                 // gen array of all slots
+    slot := 4;   // ignore first 4 slots
+    while slot <= 27 do begin
+      depositSlots.Append(slot);
+      slot += 1;
+    end;
+
+    for str in toolFilter do begin      // filter out all tools except one
+      slots := Inventory.FindAll(str);
+      write(slots);
+      writeln(slots);
+      if Length(slots) > 0 then begin
+        depositSlots.Remove(slots[0]);
+      end;
+    end;
+
+    for str in itemFilter do begin       // remove slots containing items in itemfilter
+      slots := Inventory.FindAll(str);
+      for slot in slots do depositSlots.Remove(slot);
+    end;
+
+    Exit(depositSlots);
+  end;
+
+var
+  depositSlots: TIntArray;
+begin
+  TravelTo(P.DraynorBank);
+  Bankscreen.Open(blDrynor);
+  depositSlots := getDepositSlots();
+  Bankscreen.Deposit(depositSlots);
+  Wait(1000, 3000);
+  Bankscreen.Close();
+  // deposit items that arent axe, tinderbox, cabbages, pickaxe
+end;

@@ -33,27 +33,57 @@ begin
   end;
 end;
 
-function TryClickATPA(atpa: T2DPointArray; uptext: TStringArray; timeout: Integer = ONE_SECOND*2): Boolean;
+procedure LootStuff();   // TODO: make this not suck
+  procedure HoverRandomPointMS(points: TPointArray);
+  var
+    rp: TPoint;
+  begin
+    points := Minimap.ArrToMs(points);
+    points := points.FilterBox(Mainscreen.GetBounds());
+    rp := points[Random(Length(points))];
+    rp := RandomizePoint(rp, 10);
+    {$IFDEF DEBUG}
+      Bitmap.FromClient();
+      Bitmap.DrawCross(rp, 10, $FFFFFF);
+      Bitmap.UpdateDebugImage();
+    {$ENDIF}
+    HumanMMouse(rp.X, rp.Y, RandomRange(5, 25));
+  end;
 var
-  tpa:  TPointArray;
-  rp:   TPoint; // random point
-  T: TCountdown;
-
+  // colors: Array of TCTS2Color = [C.Bones, C.HammerHead,
+  timeout: TCountdown;
+  dots: TPointArray;
 begin
-  Result := False;
-  for tpa in atpa do begin
-    rp := tpa[Random(Length(tpa))];
-    HumanMMouse(rp.X, rp.Y, RandomRange(10, 20));
-    if Mainscreen.IsUpText(uptext) then begin
-      Result := Mouse.Click(ctRed);
-      if Result then Break;
-    end;
+  if Random(5) = 0 then begin // random chance to loot
+    writeln('looting!');
+    dots := Minimap.GetDots([MMDotItem]);
+    dots := dots.FilterDist(0, 20, Minimap.GetMiddle().X, Minimap.GetMiddle().Y);
 
-    if T.IsFinished() then begin
-      Result := False;
-      Break;
+    if (Length(dots) > 0) then begin            // if there is loot
+      writeln('found loot, heh heh');
+      dots.Offset([2, 2]);
+      timeout.Init(RandomRange(ONE_SECOND*5, ONE_MINUTE div 4));
+
+      while not timeout.IsFinished() do begin
+        HoverRandomPointMS(dots); // hover red dot
+
+        if Mainscreen.IsUpText('Take') then begin // test for pick-upable item text
+          // it'd be nice to know how many items are in the stack
+          // and then click that many times
+          // but that requires mainscreen -> rswalker world point stuff
+          // and i dont feel like doing that rn
+          if Mouse.Click(ctRed) then Break; // if successful click, exit loop
+        end;
+        Wait(100, 1250);
+      end;
+      repeat Wait(500, 1000); until not Minimap.IsPlayerMoving()
     end;
   end;
+end;
+
+function PlayerAnimating(): Boolean;
+begin
+  Result := SRL.IsAnimating(Mainscreen.GetPlayerBox(), 300, 100, 2);
 end;
 
 {$include_once state.simba}
@@ -63,7 +93,6 @@ begin
   Script.Init('/usr/games/runescape --prmfile=oldschool.prm & echo -ne "\n"');
   {$include_once player-declarations.simba}
   Script.LoadMap('world.png');
-  Players.SetCurrent(0);
   Script.Login();
 end;
 
@@ -71,14 +100,17 @@ end;
 begin
   OnStart();
   ScriptTimer.Init(RandomRange(ONE_MINUTE*45, ONE_HOUR+(ONE_HOUR div 4)));
-  State := EatFood;
+  // ScriptTimer.Init(ONE_MINUTE*45);
+  State := BehaviorDone;
   repeat
     // repeat Wait(50) until IsKeyDown(VK_ENTER);
-
+    // MiningBehavior();
     State := NextState();
     if GetStateBehavior(State)() = False then State := BehaviorDone;
 
     if Random(50) = 0 then Minimap.RandomCompass(0, 359);
     SRL.DismissRandom();
+    Chatbox.HandleLevelUp();
+    Wait(25, 150);
   until ScriptTimer.IsFinished() or IsKeyDown(VK_ESCAPE);
 end.

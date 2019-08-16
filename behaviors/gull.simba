@@ -1,3 +1,5 @@
+
+
 function FarmGullBehavior(): Boolean;
 
   function ClickGull(): Boolean;
@@ -6,7 +8,7 @@ function FarmGullBehavior(): Boolean;
   begin
     atpa := GetColorsInDots([MMDotNPC], C.Gull, 2, [25, 150]);
     Result := TryClickATPA(atpa, ['Seagull'], RandomRange(ONE_SECOND, ONE_SECOND*3));
-    repeat Wait(50); until InCombat();
+    repeat Wait(50); until not (Minimap.IsPlayerMoving());
   end;
 
   procedure Reposition();
@@ -17,15 +19,47 @@ function FarmGullBehavior(): Boolean;
   begin
     myPos := Script.Walker.GetMyPos();
     if myPos.DistanceTo(P.Gulls1) < myPos.DistanceTo(P.Gulls2) then begin
-      if myPos.DistanceTo(P.Gulls1) > maxDistance then TravelTo(RandomizePoint(P.Gulls1, 4));
+      if myPos.DistanceTo(P.Gulls1) > maxDistance then TravelTo(RandomizePoint(P.Gulls1, 8));
     end else begin
-      if myPos.DistanceTo(P.Gulls2) > maxDistance then TravelTo(RandomizePoint(P.Gulls2, 4));
+      if myPos.DistanceTo(P.Gulls2) > maxDistance then TravelTo(RandomizePoint(P.Gulls2, 8));
+    end;
+  end;
+
+  procedure GrabBones();
+  var
+    atpa: T2DPointArray;
+  begin
+    if Random(5) = 0 then begin
+      GetColorsInDots([MMDotItem], C.Bones, 3, [20, 200]);
+      Result := TryClickATPA(atpa, ['bones'], RandomRange(ONE_SECOND, ONE_SECOND*3));
+      repeat Wait(100, 500); until not (Minimap.IsPlayerMoving());
+      Wait(250, 1000);
+    end;
+  end;
+
+  procedure BuryBones();
+  var
+    boneSlots: TIntArray;
+    slot: Integer;
+  begin
+    boneSlots := Inventory.FindAll('bones');
+    for slot in boneSlots do begin
+      Inventory.MouseSlot(slot, mouse_Left);
+      Wait(500, 2000);
     end;
   end;
 
 begin
-  Reposition();
-  if not InCombat() then ClickGull();
+  // LootStuff();
+  if Inventory.IsFull() and (Inventory.Count('bones') = 0) then begin
+    BankRun();
+  end else if Inventory.IsFull() then begin
+    BuryBones();
+  end;
+
+  Reposition();                  // case: gull is running away
+  if ((not NearCombat(80)) and (not Minimap.IsPlayerMoving())) then ClickGull();
+  GrabBones();
   if Random(50) = 0 then NextCombatStyle();
   Exit(True);
 end;

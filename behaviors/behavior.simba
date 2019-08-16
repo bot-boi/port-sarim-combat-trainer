@@ -7,6 +7,8 @@
 type
   TBehavior = Function(): Boolean;
 
+{$include_once behaviors/util/bankrun.simba}
+
 {$include_once behaviors/eatfood.simba}
 {$include_once behaviors/cabbage.simba}
 {$include_once behaviors/goblin.simba}

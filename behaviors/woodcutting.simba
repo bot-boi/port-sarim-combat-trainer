@@ -50,7 +50,9 @@ function WoodcuttingBehavior(): Boolean;
     while ((not XPBar.Find()) or T.IsFinished()) do Wait(50); // if xpbar isnt up, wait until it is
     Wait(RandomRange(1500, 3000)); // wait for animation and for xpbar to disappear
 
-    // TravelTo(RandomizePoint(Script.Walker.GetMyPos(), 2)); // move to a pos that (probably) doesnt have a fire
+    if (Chatbox.GetLastMessage() = "You can't light a fire here.") then begin
+      TravelTo(RandomizePoint(Script.Walker.GetMyPos(), 20)); // move to a pos that (probably) doesnt have a fire
+    end;
   end;
 
   procedure Reposition();

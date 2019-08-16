@@ -27,21 +27,6 @@ begin
   RSW_Graph.AppendRaw(path);
 end;
 
-
-procedure TravelTo(p: TPoint; timeout:Integer = ONE_MINUTE*5);
-var
-  myPos: TPoint;
-  t: TCountdown;
-
-begin
-  t.Init(timeout);
-  repeat
-    Script.Walker.WebWalk(p);
-    myPos := Script.Walker.GetMyPos();
-  until (myPos.DistanceTo(p) <= 16) or t.IsFinished();
-  while Minimap.IsPlayerMoving(100) do Wait(Random(50));
-end;
-
 begin
   InitPositions();
 end;

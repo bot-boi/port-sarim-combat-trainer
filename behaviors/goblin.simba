@@ -1,4 +1,5 @@
 function FarmGoblinBehavior(): Boolean;
+
   procedure Reposition;
   var
     maxDistance: Integer = 25;
@@ -12,19 +13,39 @@ function FarmGoblinBehavior(): Boolean;
   var
     atpa: T2DPointArray;
   begin
-    {atpa := GetColorsInDots([MMDotNPC], C.Goblin, 4, [50, 500]);
-    Result := TryClickATPA(atpa, ['Goblin'], RandomRange(ONE_SECOND, ONE_SECOND*3));}
+    atpa := GetColorsInDots([MMDotNPC], C.Goblin, 5, [25, 1000]);
+    Result := TryClickATPA(atpa, ['Goblin'], RandomRange(ONE_SECOND, ONE_SECOND*3));
     HoverRandomDot([MMDotNPC], Point(1, 1));
-    if Mainscreen.IsUpText('Goblin') or Mainscreen.IsUpText('Giant rat') then begin // include rats cus they're nearby
+    if Mainscreen.IsUpText('Goblin') then begin // include rats cus they're nearby
       Result := Mouse.Click(ctRed); // result unused
+      while Minimap.IsPlayerMoving() do Wait(100);
     end;
+  end;
 
-    // repeat Wait(50); until InCombat();
+  procedure BuryBones();
+  var
+    boneSlots: TIntArray;
+    slot: Integer;
+  begin
+    boneSlots := Inventory.FindAll('bones');
+    for slot in boneSlots do begin
+      Inventory.MouseSlot(slot, mouse_Left);
+      Wait(500, 2000);
+    end;
   end;
 
 begin
+  LootStuff();
+  if Inventory.IsFull() and (Inventory.Count('bones') = 0) then begin
+    BankRun();
+  end else if Inventory.IsFull() then begin
+    BuryBones();
+  end;
+
   Reposition();
-  if not InCombat() then ClickGoblin();
+  if not InCombat() then begin
+    ClickGoblin();
+  end;
   if Random(50) = 0 then NextCombatStyle();
   Exit(True);
 end;

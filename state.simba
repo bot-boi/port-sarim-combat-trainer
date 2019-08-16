@@ -1,12 +1,13 @@
 
 
 type                     // flag for certain behaviors that get state-stuck forever
-  TState    = (BankRun, BehaviorDone, EatFood, FarmCabbage, FarmGoblin, FarmGull1, FarmGull2, Mining, Startup, Travel, Woodcutting);
+  TState    = (BehaviorDone, EatFood, FarmCabbage, FarmGoblin, FarmGull1, FarmGull2, Mining, Startup, Travel, Woodcutting);
 
 {$include_once behaviors/behavior.simba}
 
 var
-  State: TState = EatFood;
+  State: TState = BehaviorDone;
+  prevState: TState;
   StateCountdown: TCountdown;
 
 begin
@@ -23,19 +24,14 @@ begin
   // combatLvl := Combat.GetCombatLevel();
 
   if Minimap.GetHPPercent() <= 50 then begin
-    writeln('eating food');
     Exit(EatFood);  // eat cabbages until full health
-  end else if (Inventory.Count('Cabbage') = 0) and Inventory.IsFull() then begin
-    writeln('runnin to bank');
-    Exit(BankRun); // if no food and full inv, then need bank
   end else if (Inventory.Count('Cabbage') = 0) then begin
-    writeln('farming cabbages');
     Exit(FarmCabbage);
   end;
          // change this to: longer in state, more likely to switch
   if ((Random(35) = 0) and StateCountdown.IsFinished()) or (State = BehaviorDone) then begin
 
-    //if combatLvl > 8 then begin  // should add a bias based on combat lvl instead of just a hard limit
+    //if combatLvl > 8 then begin
       // pResults += FarmGull2;
     //end else begin
       pResults += FarmGoblin;
