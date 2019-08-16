@@ -4,6 +4,7 @@ const
 
 var
   BronzePositions: TPointArray;
+  targetBronzePoin: TPoint;
 
 procedure InitBronzePositions();
 var
@@ -19,6 +20,11 @@ begin
 end;
 
 function MiningBehavior(): Boolean;
+
+  function PlayerMining(): Boolean;
+  begin
+    Result := SRL.IsAnimating(Mainscreen.GetPlayerBox(), 250, 100, 10);
+  end;
 
   procedure DropItems();
   var
@@ -45,25 +51,26 @@ function MiningBehavior(): Boolean;
 
   var
     atpa:        T2DPointArray;
-    poin, targetBronzePoin: TPoint;
+    poin: TPoint;
     maxDist: Integer = 5;
+    timeout: TCountdown;
   begin
     Reposition();
+    while Minimap.IsPlayerMoving() do Wait(250, 1000);
 
     targetBronzePoin := BronzePositions[Random(Length(BronzePositions))];
     atpa := GetColorsInTiles([targetBronzePoin], C.BronzeOre, 4, [200, 2000]);
     Result := TryClickATPA(atpa, ['Rocks'], RandomRange(ONE_SECOND*1, ONE_SECOND*3));
 
-    if Result then begin
-      while Minimap.IsPlayerMoving(100) do Wait(Random(50));
-      repeat Wait(50); until (Length(GetColorsInTiles([targetBronzePoin], C.EmptyOre, 4, [200, 2000])) > 0);
-      // while not XPBar.Find() do Wait(50); // if xpbar isnt up, wait until it is, this should probably have a timeout
-      // Wait(RandomRange(1500, 3000));      // wait for xpbar to disappear
-    end;
+    {if Result then begin
+      while Minimap.IsPlayerMoving(100) do Wait(100, 1000);    // position of ore should be saved so we don't spend a minute stuck in this loop TODO
+      timeout.Init(RandomRange(ONE_SECOND*35, ONE_MINUTE));
+      repeat Wait(100, 500); until (Length(GetColorsInTiles([targetBronzePoin], C.EmptyOre, 4, [200, 2000])) > 0) or timeout.IsFinished();
+    end;}
   end;
 
 begin
   if Inventory.IsFull() then DropItems();
-  ClickBronzeOre();
+  if not PlayerMining() then ClickBronzeOre();
   Exit(True);
 end;
