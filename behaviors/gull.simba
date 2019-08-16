@@ -25,18 +25,6 @@ function FarmGullBehavior(): Boolean;
     end;
   end;
 
-  procedure GrabBones();
-  var
-    atpa: T2DPointArray;
-  begin
-    if Random(5) = 0 then begin
-      GetColorsInDots([MMDotItem], C.Bones, 3, [20, 200]);
-      Result := TryClickATPA(atpa, ['bones'], RandomRange(ONE_SECOND, ONE_SECOND*3));
-      repeat Wait(100, 500); until not (Minimap.IsPlayerMoving());
-      Wait(250, 1000);
-    end;
-  end;
-
   procedure BuryBones();
   var
     boneSlots: TIntArray;
@@ -50,7 +38,7 @@ function FarmGullBehavior(): Boolean;
   end;
 
 begin
-  // LootStuff();
+  LootStuff();
   if Inventory.IsFull() and (Inventory.Count('bones') = 0) then begin
     BankRun();
   end else if Inventory.IsFull() then begin
@@ -59,7 +47,6 @@ begin
 
   Reposition();                  // case: gull is running away
   if ((not NearCombat(80)) and (not Minimap.IsPlayerMoving())) then ClickGull();
-  GrabBones();
   if Random(50) = 0 then NextCombatStyle();
   Exit(True);
 end;

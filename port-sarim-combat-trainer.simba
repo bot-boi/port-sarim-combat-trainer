@@ -103,8 +103,8 @@ begin
   // ScriptTimer.Init(ONE_MINUTE*45);
   State := BehaviorDone;
   repeat
-    // repeat Wait(50) until IsKeyDown(VK_ENTER);
-    // MiningBehavior();
+    {repeat Wait(50) until IsKeyDown(VK_ENTER);
+    WoodcuttingBehavior();}
     State := NextState();
     if GetStateBehavior(State)() = False then State := BehaviorDone;
 

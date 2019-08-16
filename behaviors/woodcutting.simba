@@ -46,13 +46,16 @@ function WoodcuttingBehavior(): Boolean;
     Wait(RandomRange(1000, 3000));   // wait for use animation
     Inventory.MouseSlot(logSlot, mouse_Left);
 
-    T.Init(ONE_SECOND*20);
-    while ((not XPBar.Find()) or T.IsFinished()) do Wait(50); // if xpbar isnt up, wait until it is
-    Wait(RandomRange(1500, 3000)); // wait for animation and for xpbar to disappear
-
-    if (Chatbox.GetLastMessage() = "You can't light a fire here.") then begin
-      TravelTo(RandomizePoint(Script.Walker.GetMyPos(), 20)); // move to a pos that (probably) doesnt have a fire
+    Wait(1000, 1500);  // wait for "you attempt to light a fire" text to appear
+    T.Init(ONE_SECOND*30);
+    while ((not XPBar.Find()) or T.IsFinished()) do begin
+      Wait(100, 1000); // if xpbar isnt up, wait until it is
+      if (Chatbox.GetLastMessage() = "You can't light a fire here.") then begin // you can't light a fire here
+        TravelTo(RandomizePoint(Script.Walker.GetMyPos(), 20)); // move to a pos that (probably) doesnt have a fire
+        Break;
+      end;
     end;
+    Wait(RandomRange(1500, 3000)); // wait for animation and for xpbar to disappear
   end;
 
   procedure Reposition();
